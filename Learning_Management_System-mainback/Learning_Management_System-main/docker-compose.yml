@@ -1,0 +1,40 @@
+
+services:
+  db:
+    image: postgres
+    container_name: postgres
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: eduplatform-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@edu.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+  app:
+    build: .
+    container_name: spring-boot-app
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/elearningdb
+      SPRING_DATASOURCE_USERNAME: deca
+      SPRING_DATASOURCE_PASSWORD: deca1234
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+    ports:
+      - "8080:8080"
+
+volumes:
+  pgdata:
